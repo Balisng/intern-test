@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Lock, Mail, Shield, AlertCircle, Loader2, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Lock, Mail, Shield, AlertCircle, Loader2, ArrowRight, UserPlus } from "lucide-react";
 import { api } from "../../api/client";
 
 export function AdminLogin() {
@@ -123,14 +123,31 @@ export function AdminLogin() {
             </button>
           </form>
 
-          {/* Test credentials hint */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80 text-center">
-            <p className="text-[11px] text-slate-400">
-              🔑 <span className="font-semibold text-slate-300">บัญชีทดสอบที่ Seed ไว้:</span>
-            </p>
-            <p className="text-xs text-cyan-400 font-mono mt-1 select-all">
-              admin@techfixpro.com / Admin1234!
-            </p>
+          {/* Register Link & Test credentials hint */}
+          <div className="mt-6 pt-5 border-t border-slate-800/80 space-y-3 text-center">
+            <Link
+              id="admin-to-register-link"
+              to="/admin/register"
+              className="inline-flex items-center gap-2 text-xs text-cyan-400 hover:text-cyan-300 font-bold hover:underline"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>ยังไม่มีบัญชี? สมัครสมาชิกผู้ดูแลระบบใหม่</span>
+            </Link>
+
+            <div>
+              <p className="text-[11px] text-slate-400">
+                🔑 <span className="font-semibold text-slate-300">บัญชีเริ่มต้นที่ Seed ไว้:</span>
+              </p>
+              <p className="text-xs text-slate-300 font-mono mt-0.5 select-all">
+                admin@techfixpro.com / Admin1234!
+              </p>
+            </div>
+
+            <div className="pt-1">
+              <Link to="/" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                ← กลับสู่หน้าหลักเว็บไซต์
+              </Link>
+            </div>
           </div>
         </div>
       </div>

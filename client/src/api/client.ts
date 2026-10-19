@@ -56,6 +56,11 @@ export const api = {
         method: "POST",
         body: JSON.stringify(credentials),
       }),
+    register: (data: { name: string; email: string; password: string }) =>
+      request<{ user: AdminUser; message: string }>("/api/admin/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     logout: () =>
       request<{ message: string }>("/api/admin/logout", {
         method: "POST",

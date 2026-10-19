@@ -19,6 +19,13 @@ export const loginSchema = z.object({
   password: z.string().min(1, "กรุณากรอกรหัสผ่าน"),
 });
 
+// Admin register validator
+export const registerSchema = z.object({
+  name: z.string().trim().min(1, "กรุณากรอกชื่อ-นามสกุล").max(100, "ชื่อยาวเกินไป"),
+  email: z.string().trim().email("รูปแบบอีเมลไม่ถูกต้อง"),
+  password: z.string().min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"),
+});
+
 // Settings validator
 export const settingsSchema = z.object({
   shopName: z.string().min(1, "กรุณากรอกชื่อร้าน"),

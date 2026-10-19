@@ -11,6 +11,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 
 // Admin pages
 import { AdminLogin } from "./pages/admin/AdminLogin";
+import { AdminRegister } from "./pages/admin/AdminRegister";
 import { AdminLayout } from "./pages/admin/AdminLayout";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminSettings } from "./pages/admin/AdminSettings";
@@ -93,8 +94,9 @@ export function App() {
           }
         />
 
-        {/* Admin Login */}
+        {/* Admin Login & Register */}
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/register" element={<AdminRegister />} />
 
         {/* Protected Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

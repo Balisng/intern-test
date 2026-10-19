@@ -6,6 +6,7 @@ import {
   categorySchema,
   loginSchema,
   pageUpdateSchema,
+  registerSchema,
   serviceSchema,
   settingsSchema,
 } from "../validators";
@@ -26,6 +27,98 @@ export const adminRoutes = new Hono<{ Variables: Variables }>();
 // ==========================================
 // 1. Auth routes (public endpoints)
 // ==========================================
+
+// POST /api/admin/register
+adminRoutes.post("/register", async (c) => {
+  const body = await c.req.json();
+  const parsed = registerSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "ข้อมูลการสมัครสมาชิกไม่ถูกต้อง",
+          details: parsed.error.flatten().fieldErrors,
+        },
+      },
+      400
+    );
+  }
+
+  const { name, email, password } = parsed.data;
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Check unique email
+  const existing = await db
+    .select()
+    .from(admins)
+    .where(eq(admins.email, normalizedEmail))
+    .limit(1);
+
+  if (existing.length > 0) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "EMAIL_EXISTS",
+          message: "อีเมลนี้ถูกลงทะเบียนเป็นผู้ดูแลระบบไว้แล้ว",
+          details: {},
+        },
+      },
+      409
+    );
+  }
+
+  const passwordHash = await Bun.password.hash(password, {
+    algorithm: "bcrypt",
+    cost: 10,
+  });
+
+  const [newAdmin] = await db
+    .insert(admins)
+    .values({
+      name: name.trim(),
+      email: normalizedEmail,
+      passwordHash,
+    })
+    .returning();
+
+  if (!newAdmin) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "ไม่สามารถสร้างบัญชีผู้ดูแลได้ กรุณาลองใหม่อีกครั้ง",
+          details: {},
+        },
+      },
+      500
+    );
+  }
+
+  const tokenPayload = {
+    id: newAdmin.id,
+    email: newAdmin.email,
+    name: newAdmin.name,
+  };
+
+  const token = await createAuthToken(tokenPayload);
+  setAuthCookie(c, token);
+
+  return c.json(
+    {
+      success: true,
+      data: {
+        user: tokenPayload,
+        message: "ลงทะเบียนผู้ดูแลระบบสำเร็จ",
+      },
+    },
+    201
+  );
+});
 
 // POST /api/admin/login
 adminRoutes.post("/login", async (c) => {
